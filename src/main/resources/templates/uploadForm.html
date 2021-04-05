@@ -1,26 +1,94 @@
-<html xmlns:th="https://www.thymeleaf.org">
+<!DOCTYPE>
+
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+<title>File Upload Form</title>
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+</head>
+
 <body>
 
-	<div th:if="${message}">
-		<h2 th:text="${message}"/>
-	</div>
+	<section class="my-5">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 mx-auto">
+					<h2>File Upload Form</h2>
+					<p th:text="${message}" th:if="${message ne null}"
+						class="alert alert-primary"></p>
+					<form method="post" th:action="@{/}" enctype="multipart/form-data">
+						<div class="form-group">
+							<input id="file" type="file" name="file"
+								class="form-control-file" onchange="return fileValidation()"
+								required>
+						</div>
+						<button type="submit" class="btn btn-primary">Upload File</button>
+					</form>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-8 mx-auto">
+					<ul>
+						<li th:each="file : ${files}"><a th:href="${file}"
+							th:text="${file}" /></li>
+					</ul>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-8 mx-auto">
+					<span th:text="${fileType}" th:if="${fileType ne null}"
+						class="alert alert-primary"></span>
+				</div>
+			</div>
+		</div>
+	</section>
 
-	<div>
-		<form method="POST" enctype="multipart/form-data" action="/">
-			<table>
-				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-			</table>
-		</form>
-	</div>
+	<script>
+		function fileValidation() {
+			var fileInput = document.getElementById('file');
+			
+			if (fileInput.files.length > 0) {
+	            for (var i = 0; i <= fileInput.files.length - 1; i++) {
+	 
+	                const fsize = fileInput.files.item(i).size;
+	                const file = (fsize / 1024 / 1024).toFixed(3);
+	                // The size of the file.
+	                if (file >= 10) {
+	                    alert(
+	                      "File too Big, please select a file less than 10mb");
+	                    fileInput.value = '';
+	    				return false;
+	                } else if (file < 0.001) {
+	                    alert(
+	                      "File too small, please select a file greater than 0.001mb");
+	                    fileInput.value = '';
+	    				return false;
+	                } else {
+	                    
+	                	var filePath = fileInput.value;
 
-	<div>
-		<ul>
-			<li th:each="file : ${files}">
-				<a th:href="${file}" th:text="${file}" />
-			</li>
-		</ul>
-	</div>
+	        			// Allowed file types
+	        			var allowedExtensions = /(\.doc|\.docx|\.pdf)$/i;
+
+	        			if (!allowedExtensions.exec(filePath)) {
+	        				alert('Invalid file type');
+	        				fileInput.value = '';
+	        				return false;
+	        			} else {
+	        				// do nothing
+	        			}
+	                	
+	                }
+	            }
+	        } else {
+	        	alert('No file selected');
+				fileInput.value = '';
+				return false;
+	        }
+			return true;
+		}
+	</script>
 
 </body>
 </html>

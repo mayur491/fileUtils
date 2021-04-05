@@ -1,6 +1,7 @@
 package com.codemayur.fileutils.service;
 
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
@@ -19,5 +20,12 @@ public interface StorageService {
 	Resource loadAsResource(String filename);
 
 	void deleteAll();
+
+	/**
+	 * @param file
+	 * @author mayur.somani
+	 * @return 
+	 */
+	Map<String, Object> validateFile(MultipartFile file);
 
 }

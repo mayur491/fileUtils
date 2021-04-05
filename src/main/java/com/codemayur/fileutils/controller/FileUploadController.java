@@ -1,6 +1,6 @@
 package com.codemayur.fileutils.controller;
 
-import java.io.IOException;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class FileUploadController {
 	}
 
 	@GetMapping("/")
-	public String listUploadedFiles(Model model) throws IOException {
+	public String listUploadedFiles(Model model) {
 
 		model.addAttribute("files",
 				storageService.loadAll()
@@ -65,14 +65,30 @@ public class FileUploadController {
 			RedirectAttributes redirectAttributes) {
 
 		storageService.store(file);
+
+		// ASPOSE & OCR CHECK HERE!!!
+		Map<String, Object> map = storageService.validateFile(file);
+
+		redirectAttributes.addFlashAttribute("fileType",
+				map.get("fileType"));
+
+		if ("PDF".equals(map.get("fileType"))) {
+
+			redirectAttributes.addFlashAttribute("height",
+					map.get("height"));
+			redirectAttributes.addFlashAttribute("width",
+					map.get("width"));
+		}
+
 		redirectAttributes.addFlashAttribute("message",
-				"You successfully uploaded " + file.getOriginalFilename() + "!");
+				String.format("You successfully uploaded %s.",
+						file.getOriginalFilename()));
 
 		return "redirect:/";
 	}
 
 	@ExceptionHandler(StorageFileNotFoundException.class)
-	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+	public ResponseEntity<Object> handleStorageFileNotFound(StorageFileNotFoundException exc) {
 		return ResponseEntity.notFound()
 				.build();
 	}
